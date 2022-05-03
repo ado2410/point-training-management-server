@@ -2,6 +2,7 @@ const TemplateRoute = require("./TemplateRoute");
 const {check} = require("express-validator");
 const Model = require("../models/SheetModel");
 const SemesterModel = require("../models/SemesterModel");
+const TitleActivityModel = require("../models/TitleActivityModel");
 const YearModel = require("../models/YearModel");
 
 const rules = [
@@ -29,6 +30,14 @@ module.exports = TemplateRoute(
         update: {
             rules: rules,
             fields: ["name", "description"]
+        },
+        delete: {
+            custom: async (req, res) => {
+                const sheet = (await new Model({id: req.params.id}).fetch()).toJSON();
+                await new TitleActivityModel().where("sheet_id", sheet.id).destroy();
+                await new Model({id: req.params.id}).destroy();
+                return res.json(sheet);
+            }
         }
     }
 );

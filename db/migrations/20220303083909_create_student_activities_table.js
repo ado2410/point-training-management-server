@@ -7,7 +7,7 @@ exports.up = function(knex) {
         table.bigIncrements().primary();
         table.bigInteger("student_id").references("id").inTable("students").notNullable();
         table.bigInteger("activity_id").references("id").inTable("activities").notNullable();
-        table.integer("value").notNullable();
+        table.float("value").notNullable();
         table.timestamps(true, true);
     });
 };

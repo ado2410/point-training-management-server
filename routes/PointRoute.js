@@ -20,7 +20,8 @@ route.get("/", asyncRoute(async (req, res) => {
                 },
             ]
         });
-        return res.json({data: data});
+        let student = await new StudentModel({id: req.query.student}).fetch({withRelated: ['user', 'class']});
+        return res.json({data: data, student: student});
     } else {
         let data = await new PrimaryTitleModel().fetchAll({
             withRelated: [

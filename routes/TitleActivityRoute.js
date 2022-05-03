@@ -22,9 +22,13 @@ const rules = [
 ];
 
 route.get("/", asyncRoute(async (req, res) => {
-    let primaryTitles = await new PrimaryTitleModel().fetchAll({
+    let primaryTitles = await new PrimaryTitleModel()
+        .orderBy("order", "ASC")
+        .fetchAll({
         withRelated: [
             'secondary_titles.third_titles.title_activities.activity',
+            {'secondary_titles': (qb) => qb.orderBy("order", "ASC")},
+            {'secondary_titles.third_titles': (qb) => qb.orderBy("order", "ASC")},
             {'secondary_titles.third_titles.title_activities': (qb) => qb.where('sheet_id', req.query.sheet)},
         ],
     });

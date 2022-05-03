@@ -1,33 +1,47 @@
 const TemplateRoute = require("./TemplateRoute");
-const {check} = require("express-validator");
+const {body} = require("express-validator");
 const Model = require("../models/StudentModel");
 const ClassModel = require("../models/ClassModel");
+const UserModel = require("../models/UserModel");
+const {exists} = require("../utils/validator");
+const {bookshelf} = require("../utils/db");
+const Promise = require("bluebird");
 
-const rules = [
-    check("student_code")
+const rules = (isImport = false) => ([
+    body(`${isImport ? '*.' : ''}student_code`)
+        .notEmpty().withMessage("Không được để trống")
+        .not().custom((value, {req}) => exists(Model, value, "student_code", [req.params.id])).withMessage("Đã tồn tại trong CSDL"),
+    body(`${isImport ? '*.' : ''}first_name`)
         .notEmpty().withMessage("Không được để trống"),
-    check("first_name")
+    body(`${isImport ? '*.' : ''}last_name`)
         .notEmpty().withMessage("Không được để trống"),
-    check("last_name")
-        .notEmpty().withMessage("Không được để trống"),
-    check("gender")
+    body(`${isImport ? '*.' : ''}gender`)
         .notEmpty().withMessage("Không được để trống")
         .isIn(["male", "female"]).withMessage("Giới tính không hợp lệ"),
-    check("dob")
+    body(`${isImport ? '*.' : ''}dob`)
         .notEmpty().withMessage("Không được để trống")
-        .isDate().withMessage("Không phải định dạng ngày tháng"),
-    check("class_id")
-        .notEmpty().withMessage("Không được để trống"),
-    check("username")
+        .not().isDate().withMessage("Không phải định dạng ngày tháng"),
+    body(`${isImport ? '*.' : ''}class_id`)
+        .notEmpty().withMessage("Không được để trống")
+        .custom((value, {req}) => exists(ClassModel, value, "id")).withMessage("Không tồn tại trong CSDL"),
+    body(`${isImport ? '*.' : ''}username`)
         .notEmpty().withMessage("Không được để trống")
         .isAlphanumeric().withMessage("Chỉ được phép kí tự chữ cái (A-Z), (a-z) và (0-9)")
-        .isLength({min: 3, max: 20}).withMessage("Độ dài ít nhất là 3 và tối đa là 20"),
-    check("password")
-        .notEmpty().withMessage("Không được để trống"),
-    check("email")
+        .isLength({min: 3, max: 20}).withMessage("Độ dài ít nhất là 3 và tối đa là 20")
+        .not().custom(async (value, {req}) => {
+            let student = null;
+            if (req.params.id) student = (await new Model({id: req.params.id}).fetch()).toJSON();
+            return exists(UserModel, value, "username", student ? [student.user_id] : []);
+    }).withMessage("Đã tồn tại trong CSDL"),
+    body(`${isImport ? '*.' : ''}email`)
         .notEmpty().withMessage("Không được để trống")
-        .isEmail().withMessage("Không phải là email"),
-];
+        .isEmail().withMessage("Không phải là email")
+        .not().custom(async (value, {req}) => {
+            let student = null;
+            if (req.params.id) student = (await new Model({id: req.params.id}).fetch()).toJSON();
+            return exists(UserModel, value, "email", student ? [student.user_id] : []);
+    }).withMessage("Đã tồn tại trong CSDL"),
+]);
 
 module.exports = TemplateRoute(
     Model,
@@ -38,19 +52,92 @@ module.exports = TemplateRoute(
         create: {
             options: {
                 classes: () => new ClassModel().fetchAll(),
-                genders: [
-                    {id: "male", name: "Nam"},
-                    {id: "female", name: "Nữ"},
-                ],
             }
         },
         insert: {
             rules: rules,
-            fields: ["name"]
+            custom: async (req, res) => {
+                const user = await new UserModel({
+                    user_type_id: 3,
+                    username: req.body.username,
+                    password: req.body.password,
+                    first_name: req.body.first_name,
+                    last_name: req.body.last_name,
+                    email: req.body.email,
+                }).save();
+                let student = await new Model({
+                    user_id: user.id,
+                    class_id: req.body.class_id,
+                    student_code: req.body.student_code,
+                    gender: req.body.gender,
+                    dob: req.body.dob,
+                }).save();
+
+                student = await new Model({id: student.id}).fetch({withRelated: ['user', 'class']});
+                return res.json(student);
+            },
+        },
+        import: {
+            rules: rules(true),
+            custom: async (req, res) => {
+                const users = req.body.map(item => ({
+                    user_type_id: 3,
+                    username: item.username,
+                    password: item.password,
+                    first_name: item.first_name,
+                    last_name: item.last_name,
+                    email: item.email,
+                }));
+                let Collection = bookshelf.Collection.extend({model: UserModel});
+                let collection = Collection.forge(users);
+                let data = await Promise.all(collection.invokeMap('save'));
+
+                const students = req.body.map((item, index) => ({
+                    user_id: data[index].id,
+                    class_id: item.class_id,
+                    student_code: item.student_code,
+                    gender: item.gender,
+                    dob: item.dob,
+                }));
+                Collection = bookshelf.Collection.extend({model: Model});
+                collection = Collection.forge(students);
+                data = await Promise.all(collection.invokeMap('save'));
+                const studentIds = data.map(data => data.id);
+
+                data = await new Model().where("id", "in", studentIds).fetchAll({withRelated: ['user', 'class']});
+
+                return res.json(data);
+            }
         },
         update: {
-            rules: rules,
-            fields: ["name"]
+            rules: rules(),
+            custom: async (req, res) => {
+                let student = await new Model({id: req.params.id}).save({
+                    class_id: req.body.class_id,
+                    student_code: req.body.student_code,
+                    gender: req.body.gender,
+                    dob: req.body.dob,
+                });
+                student = JSON.parse(JSON.stringify(student));
+
+                await new UserModel({id: student.user_id}).save({
+                    first_name: req.body.first_name,
+                    last_name: req.body.last_name,
+                    email: req.body.email,
+                });
+
+                student = await new Model({id: student.id}).fetch({withRelated: ['user', 'class']});
+                return res.json(student);
+            },
+        },
+        delete: {
+            custom: async (req, res) => {
+                let student = await new Model({id: req.params.id}).fetch();
+                student = JSON.parse(JSON.stringify(student));
+                await new Model({id: req.params.id}).destroy();
+                await new UserModel({id: student.user_id}).destroy();
+                return res.json(student);
+            }
         }
     }
 );

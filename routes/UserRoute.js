@@ -30,6 +30,9 @@ module.exports = TemplateRoute(
     {
         fetchOptions: {
             withRelated: ["user_type"],
+        },
+        list: {
+            query: (qb) => qb.where("user_type_id", "<>", 3),
             search: ["username", "first_name", "last_name"],
         },
         insert: {
