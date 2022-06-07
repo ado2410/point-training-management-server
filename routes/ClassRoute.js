@@ -11,9 +11,15 @@ const rules = [
 module.exports = TemplateRoute(
     Model,
     {
+        fetchOptions: {
+            withRelated: ["major.department"],
+        },
         list: {
-            key: "classes",
-            fetch: (req, res) => new Model().where("major_id", req.query.major).orderBy("created_at", "DESC").fetchAll(),
+            query: (qb, req) => {
+                if (req.query.major)
+                    qb  = qb.where("major_id", req.query.major);
+                    return qb;
+            },
         },
         create: {
             options: {

@@ -32,10 +32,8 @@ route.get("/", asyncRoute(async (req, res) => {
             {'secondary_titles.third_titles.title_activities': (qb) => qb.where('sheet_id', req.query.sheet)},
         ],
     });
-    let sheet = await new SheetModel().where({id: req.query.sheet}).fetch();
     return res.json({data: {
         primaryTitles: primaryTitles,
-        sheet: sheet,
     }});
 }));
 

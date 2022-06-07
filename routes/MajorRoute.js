@@ -11,6 +11,9 @@ const rules = [
 module.exports = TemplateRoute(
     Model,
     {
+        fetchOptions: {
+            withRelated: ["department"],
+        },
         list: {
             fetch: (req, res) => new Model().where("department_id", req.query.department).orderBy("created_at", "DESC").fetchAll(),
         },

@@ -16,7 +16,7 @@ module.exports = (
             data = (await options.list.fetch(req, res));
         else {
             data = new model();
-            if (options.list?.query) data = options.list.query(data);
+            if (options.list?.query) data = options.list.query(data, req, res);
             data = data.where(qb => {
                 if (options.list?.search && req.query.search)
                     options.list?.search.forEach(column => qb.orWhere(column, "ilike", `%${req.query.search}%`));
@@ -43,8 +43,12 @@ module.exports = (
     }));
 
     route.get("/:id", asyncRoute(async (req, res) => {
-        const data = await new model({id: req.params.id}).fetch(options?.fetchOptions || {});
-        return res.json(data);
+        if (options.view?.custom)
+            return await options.view.custom(req, res);
+        else {
+            const data = await new model({id: req.params.id}).fetch(options?.fetchOptions || {});
+            return res.json(data);
+        }
     }));
 
     route.post("/import", options.import?.rules || [], asyncRoute(async (req, res) => {

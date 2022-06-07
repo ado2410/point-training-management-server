@@ -6,7 +6,6 @@ exports.up = function(knex) {
     return knex.schema.createTable("activity_types", (table) => {
         table.bigIncrements().primary();
         table.text("name").notNullable();
-        table.text("description");
         table.timestamps(true, true);
     });
 };

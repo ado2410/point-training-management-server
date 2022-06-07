@@ -22,7 +22,7 @@ const rules = [
 const createRules = [
     ...rules,
     check("password")
-        .notEmpty().withMessage("Không được để trống"),
+        .notEmpty().withMessage("Không được để trống")
 ];
 
 module.exports = TemplateRoute(
@@ -41,7 +41,7 @@ module.exports = TemplateRoute(
         },
         update: {
             rules: rules,
-            fields: ["username", "first_name", "last_name", "email"]
+            fields: ["first_name", "last_name", "email"]
         }
     },
 );

@@ -4,6 +4,9 @@ const StudentModel = require("../models/StudentModel");
 const PrimaryTitleModel = require("../models/PrimaryTitleModel");
 const ThirdTitleModel = require("../models/ThirdTitleModel");
 const StudentActivityModel = require("../models/StudentActivityModel");
+const MajorModel = require("../models/MajorModel");
+const DepartmentModel = require("../models/DepartmentModel");
+const SheetModel = require("../models/SheetModel");
 const route = express.Router({mergeParams: true});
 
 route.get("/", asyncRoute(async (req, res) => {
@@ -20,8 +23,9 @@ route.get("/", asyncRoute(async (req, res) => {
                 },
             ]
         });
-        let student = await new StudentModel({id: req.query.student}).fetch({withRelated: ['user', 'class']});
-        return res.json({data: data, student: student});
+        let student = await new StudentModel({id: req.query.student}).fetch({withRelated: ['user', 'class.major.department']});
+        let sheet = await new SheetModel({id: req.query.sheet}).fetch({withRelated: ['semester.year']});
+        return res.json({data: data, student: student, sheet: sheet});
     } else {
         let data = await new PrimaryTitleModel().fetchAll({
             withRelated: [
@@ -31,7 +35,10 @@ route.get("/", asyncRoute(async (req, res) => {
                 },
             ]
         });
-        let students = await new StudentModel().fetchAll({withRelated: ['user', 'class']});
+        let students = new StudentModel();
+        if (req.query.class)
+            students = students.where("class_id", req.query.class);
+        students = await students.fetchAll({withRelated: ['user', 'class']});
         return res.json({data: data, students: students});
     }
 }));

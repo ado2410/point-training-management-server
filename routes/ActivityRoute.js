@@ -21,7 +21,7 @@ const rules = (isImport = false) => ([
         .not().isDate().withMessage("Không phải kiểu ngày"),
     body(`${isImport ? '*.' : ''}type`)
         .notEmpty().withMessage("Không được để trống")
-        .isIn(["CHECK", "COUNT", "ENUM"]).withMessage("Không đúng kiểu")
+        .isIn(["CHECK", "COUNT", "ENUM", "POINT"]).withMessage("Không đúng kiểu")
         .not().isDate().withMessage("Không phải kiểu ngày"),
 ]);
 
@@ -29,7 +29,7 @@ module.exports = TemplateRoute(
     Model,
     {
         fetchOptions: {
-            withRelated: ['activity_type'],
+            withRelated: ['activity_type', 'semester.year'],
         },
         list: {
             fetch: (req, res) => {

@@ -61,22 +61,22 @@ exports.seed = async function (knex) {
     ]);
 
     await knex("users").del();
-    await knex("users").insert([
+    /*await knex("users").insert([
         { username: "admin", password: "password", first_name: "Jenny", last_name: "Đỗ", email: "adork2410@gmail.com", user_type_id: 1 },
         { username: "importer", password: "password", first_name: "Nguyễn Trúc", last_name: "Giang", email: "adork24101@gmail.com", user_type_id: 2 },
         { username: "student1", password: "password", first_name: "Nguyễn Văn", last_name: "A", email: "student1@fake.com", user_type_id: 3 },
         { username: "student2", password: "password", first_name: "Nguyễn Thị", last_name: "B", email: "student2@fake.com", user_type_id: 3 },
         { username: "student3", password: "password", first_name: "Nguyễn Thị", last_name: "C", email: "student3@fake.com", user_type_id: 3 },
         { username: "student4", password: "password", first_name: "Nguyễn Văn", last_name: "D", email: "student4@fake.com", user_type_id: 3 },
-    ]);
+    ]);*/
 
     await knex("students").del();
-    await knex("students").insert([
+    /*await knex("students").insert([
         { student_code: "1917480201001", gender: "male", dob: "2000-10-24", user_id: 3, class_id: 2 },
         { student_code: "1917480201002", gender: "female", dob: "2000-12-05", user_id: 4, class_id: 2 },
         { student_code: "1917480201003", gender: "female", dob: "2000-12-05", user_id: 5, class_id: 2 },
         { student_code: "2017480201001", gender: "male", dob: "2001-05-06", user_id: 6, class_id: 3 },
-    ]);
+    ]);*/
 
     await knex("years").del();
     await knex("years").insert([
@@ -97,7 +97,6 @@ exports.seed = async function (knex) {
         { name: "Hoạt động sinh viên" },
         { name: "Khen thưởng" },
         { name: "Vi phạm" },
-        { name: "Điểm" },
     ]);
 
     await knex("activities").del();
@@ -131,9 +130,9 @@ exports.seed = async function (knex) {
     ]);*/
 
     await knex("sheets").del();
-    await knex("sheets").insert([
+    /*await knex("sheets").insert([
         { name: "Bảng điểm học kỳ 1 năm học 2021 - 2022", semester_id: 1 },
-    ]);
+    ]);*/
 
     await knex("primary_titles").del();
     await knex("primary_titles").insert([

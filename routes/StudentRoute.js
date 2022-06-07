@@ -46,8 +46,15 @@ const rules = (isImport = false) => ([
 module.exports = TemplateRoute(
     Model,
     {
+        fetchOptions: {
+            withRelated: ["user", "class"],
+        },
         list: {
-            fetch: (req, res) => new Model().where("class_id", req.query.class).orderBy("created_at", "DESC").fetchAll({withRelated: ['user', 'class']}),
+            query: (qb, req) => {
+                if (req.query.class)
+                    qb = qb.where("class_id", req.query.class);
+                return qb;
+            },
         },
         create: {
             options: {

@@ -14,7 +14,7 @@ exports.up = function(knex) {
         table.text("address");
         table.text("host");
         table.text("description");
-        table.enum("type", ["CHECK", "COUNT", "ENUM"]).defaultTo("CHECK").notNullable();
+        table.enum("type", ["CHECK", "COUNT", "ENUM", "POINT"]).defaultTo("CHECK").notNullable();
         table.specificType("accepts", "text[]");
         table.bigInteger("default_value").defaultTo(0).notNullable();
         table.timestamps(true, true);

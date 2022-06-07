@@ -2,11 +2,16 @@ const express = require("express");
 const {asyncRoute} = require("../utils/route");
 const StudentModel = require("../models/StudentModel");
 const StudentActivityModel = require("../models/StudentActivityModel");
+const ClassModel = require("../models/ClassModel");
 const route = express.Router({mergeParams: true});
 
 route.get("/", asyncRoute(async (req, res) => {
-    let data = await new StudentModel().fetchAll({
+    let data = new StudentModel();
+    if (req.query.class)
+        data = data.where("class_id", req.query.class);
+    data = data.fetchAll({
         withRelated: ['student_activities.activity', 'class', 'user']});
+    data = await data;
     return res.json({data: data});
 }));
 
