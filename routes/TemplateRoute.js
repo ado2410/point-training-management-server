@@ -77,11 +77,18 @@ module.exports = (
         if (options.insert?.custom)
             return await options.insert.custom(req, res);
         else {
+            //pre
+            if (options.insert?.pre) await options.insert.pre(req, res);
+
             const fields = {};
             options.insert.fields.map(field => fields[field] = req.body[field]);
-            const result = await new model(fields).save();
-            const data = await new model({id: result.id}).fetch(options?.fetchOptions || {});
-            return res.json(data);
+            let result = await new model(fields).save();
+            result = await new model({id: result.id}).fetch(options?.fetchOptions || {});
+
+            //post
+            if (options.insert?.post) await options.insert.post(result.toJSON(), req, res);
+
+            return res.json(result);
         }
     }));
 
@@ -92,11 +99,18 @@ module.exports = (
         if (options.update?.custom)
             return await options.update.custom(req, res);
         else {
+            //pre
+            if (options.update?.pre) await options.update.pre(req, res);
+
             const fields = {};
             options.update.fields.map(field => fields[field] = req.body[field]);
-            const result = await new model({id: req.params.id}).save(fields);
-            const data = await new model({id: result.id}).fetch(options?.fetchOptions || {});
-            return res.json(data);
+            let result = await new model({id: req.params.id}).save(fields);
+            result = await new model({id: result.id}).fetch(options?.fetchOptions || {});
+
+            //post
+            if (options.update?.post) await options.update.post(result.toJSON(), req, res);
+
+            return res.json(result);
         }
     }));
 
@@ -104,8 +118,15 @@ module.exports = (
         if (options.delete?.custom)
             return await options.delete.custom(req, res);
         else {
+            //pre
+            if (options.delete?.pre) await options.delete.pre(req, res);
+
             const result = await new model({id: req.params.id}).fetch();
             await new model({id: req.params.id}).destroy();
+
+            //post
+            if (options.delete?.post) await options.delete.post(result.toJSON(), req, res);
+            
             return res.json(result);
         }
     }));

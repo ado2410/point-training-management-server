@@ -61,22 +61,12 @@ exports.seed = async function (knex) {
     ]);
 
     await knex("users").del();
-    /*await knex("users").insert([
+    await knex("users").insert([
         { username: "admin", password: "password", first_name: "Jenny", last_name: "Đỗ", email: "adork2410@gmail.com", user_type_id: 1 },
         { username: "importer", password: "password", first_name: "Nguyễn Trúc", last_name: "Giang", email: "adork24101@gmail.com", user_type_id: 2 },
-        { username: "student1", password: "password", first_name: "Nguyễn Văn", last_name: "A", email: "student1@fake.com", user_type_id: 3 },
-        { username: "student2", password: "password", first_name: "Nguyễn Thị", last_name: "B", email: "student2@fake.com", user_type_id: 3 },
-        { username: "student3", password: "password", first_name: "Nguyễn Thị", last_name: "C", email: "student3@fake.com", user_type_id: 3 },
-        { username: "student4", password: "password", first_name: "Nguyễn Văn", last_name: "D", email: "student4@fake.com", user_type_id: 3 },
-    ]);*/
+    ]);
 
     await knex("students").del();
-    /*await knex("students").insert([
-        { student_code: "1917480201001", gender: "male", dob: "2000-10-24", user_id: 3, class_id: 2 },
-        { student_code: "1917480201002", gender: "female", dob: "2000-12-05", user_id: 4, class_id: 2 },
-        { student_code: "1917480201003", gender: "female", dob: "2000-12-05", user_id: 5, class_id: 2 },
-        { student_code: "2017480201001", gender: "male", dob: "2001-05-06", user_id: 6, class_id: 3 },
-    ]);*/
 
     await knex("years").del();
     await knex("years").insert([
@@ -87,9 +77,6 @@ exports.seed = async function (knex) {
     await knex("semesters").del();
     await knex("semesters").insert([
         { name: "1", year_id: 1 },
-        { name: "2", year_id: 1 },
-        { name: "1", year_id: 2 },
-        { name: "2", year_id: 2 },
     ]);
 
     await knex("activity_types").del();
@@ -100,39 +87,8 @@ exports.seed = async function (knex) {
     ]);
 
     await knex("activities").del();
-    /*await knex("activities").insert([
-        { code: "YT1,2", name: "Vi phạm ý thức, thái độ học tập", description: "Sinh viên vắng học (kể cả học online) (Vi phạm lần 1 trừ 1 điểm, từ lần 3 trở đi trừ hết số điểm còn lại)", type: "COUNT", activity_type_id: 3 },
-        { code: "KT", name: "Vi phạm quy chế thi, kiểm tra", description: "Sinh viên vi phạm quy chế thi (có biên bản vi phạm):Tùy theo mức độ vi phạm trừ từ 1-3 điểm.", type: "COUNT", activity_type_id: 3 },
-        { code: "HP", name: "Vi phạm quy định về học phí", description: "SV đóng học phí trễ hạn (có danh sách từ phòng KH-TC): -05 điểm", type: "ENUM", accepts: ["Không đóng", "Đúng hạn", "Trễ hạn"], activity_type_id: 3 },
-        { code: "HT", name: "Điểm học tập", description: "", type: "ENUM", accepts: ["0 - 2.5", "2.5 - 3.19", "3.2 - 3.59", "3.6 - 4.0"], activity_type_id: 3 },
-        { code: "NCKH", name: "Nghiên cứu khoa học sinh viên", host: "Phòng KH&HTQT", description: "Dành cho tất cả sinh viên", type: "CHECK", activity_type_id: 1 },
-        { code: "CLB1", name: "Tham gia Câu lạc bộ học thuật", host: "Đoàn TN Phân hiệu", description: "Dành cho tất cả sinh viên", type: "CHECK", activity_type_id: 1 },
-        { code: "CLB2", name: "Tham gia Câu lạc bộ TDTT - VHVN", host: "Đoàn TN Phân hiệu", description: "Dành cho tất cả sinh viên", type: "CHECK", activity_type_id: 1 },
-        { code: "CLB/CBĐ", name: "Câu lạc bộ/Cán bộ đoàn", description: "", type: "ENUM", accepts: ["Không giữ chức vụ", "Hoàn thành xuất sắc", "Hoàn thành tốt", "Hoàn thành", "Không hoàn thành"], activity_type_id: 3 },
-        { code: "KT1", name: "Chứng nhận, biểu dương, khen thưởng các hoạt động xã hội", host: "Đoàn TN Phân hiệu", description: "Dành cho tất cả sinh viên", type: "COUNT", activity_type_id: 2 },
-        { code: "KT2", name: "Bằng khen, giấy khen, chứng nhận, thư khen của các cấp (đạt thành tích trong học tập, rèn luyện)", host: "Đoàn TN Phân hiệu; Phòng Công tác HSSV", description: "Dành cho tất cả sinh viên", type: "COUNT", activity_type_id: 2 },
-        { code: "PD", name: "Trực phòng chống dịch Covid-19", time_start: "2021-10-10", address: "02 cơ sở PH", host:"Đoàn TN Phân hiệu", description: "Dành cho tất cả sinh viên", type: "CHECK", semester_id: 1, activity_type_id: 1 },
-        { code: "LT", name: "Cuộc thi Lập trình UDCK Code Contest 2021", time_start: "2021-10-10", time_end: "2021-12-15", host: "Khoa KT-NN", description: "Dành cho tất cả sinh viên", type: "CHECK", semester_id: 1, activity_type_id: 1 },
-        { code: "NK2", name: "Tập huấn kỹ năng viết CV", host: "Khoa Công nghệ", description: "Dành cho tất cả sinh viên", type: "CHECK", semester_id: 1, activity_type_id: 1 },
-        { code: "NK3", name: "Tập huấn kỹ năng viết email chuyên nghiệp", host: "Khoa Công nghệ", description: "Dành cho tất cả sinh viên", type: "CHECK", semester_id: 1, activity_type_id: 1 },
-    ]);*/
 
     await knex("student_activities").del();
-    /*await knex("student_activities").insert([
-        { student_id: 1, activity_id: 1, value: 4 },
-        { student_id: 1, activity_id: 2, value: 1 },
-        { student_id: 1, activity_id: 3, value: 1 },
-        { student_id: 1, activity_id: 4, value: 3 },
-        { student_id: 2, activity_id: 1, value: 2 },
-        { student_id: 2, activity_id: 2, value: 1 },
-        { student_id: 2, activity_id: 4, value: 2 },
-        { student_id: 2, activity_id: 5, value: 1 },
-    ]);*/
-
-    await knex("sheets").del();
-    /*await knex("sheets").insert([
-        { name: "Bảng điểm học kỳ 1 năm học 2021 - 2022", semester_id: 1 },
-    ]);*/
 
     await knex("primary_titles").del();
     await knex("primary_titles").insert([
@@ -191,13 +147,4 @@ exports.seed = async function (knex) {
     ]);
 
     await knex("title_activities").del();
-    /*await knex("title_activities").insert([
-        { third_title_id: 1, activity_id: 1, sheet_id: 1, point: [-1], options: [{type: "gte", value: 3, point: -5}] },
-        { third_title_id: 2, activity_id: 5, sheet_id: 1, point: [4] },
-        { third_title_id: 2, activity_id: 12, sheet_id: 1, point: [4] },
-        { third_title_id: 3, activity_id: 13, sheet_id: 1, point: [2] },
-        { third_title_id: 3, activity_id: 14, sheet_id: 1, point: [2] },
-        { third_title_id: 4, activity_id: 2, sheet_id: 1, point: [-1], options: [{type: "gte", value: 2, point: -3}] },
-        { third_title_id: 5, activity_id: 4, sheet_id: 1, point: [0, 1, 2, 3] },
-    ]);*/
 };

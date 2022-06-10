@@ -9,14 +9,19 @@ const knex = require("knex");
 const { db } = require("../utils/db");
 const { asyncRoute } = require("../utils/route");
 
-const rules = [
+const createRules = [
     check("name")
         .notEmpty().withMessage("Không được để trống"),
     check("semester_id")
         .notEmpty().withMessage("Không được để trống"),
 ];
 
-const route = TemplateRoute(
+const editRules = [
+    check("name")
+        .notEmpty().withMessage("Không được để trống"),
+];
+
+module.exports = TemplateRoute(
     Model,
     {
         fetchOptions: {
@@ -34,11 +39,11 @@ const route = TemplateRoute(
             }
         },
         insert: {
-            rules: rules,
+            rules: createRules,
             fields: ["name", "description", "semester_id"]
         },
         update: {
-            rules: rules,
+            rules:editRules,
             fields: ["name", "description"]
         },
         delete: {
@@ -51,20 +56,3 @@ const route = TemplateRoute(
         }
     }
 );
-
-route.post("/:id/copy", asyncRoute(async (req, res) => {
-    const sheet = (await new SheetModel({id: req.params.id}).fetch()).toJSON();
-
-    let copiedSheet = (await new SheetModel().save({
-        semester_id: req.body.semester_id,
-        name: req.body.name,
-    })).toJSON();
-
-    copiedSheet = (await new SheetModel({id: copiedSheet.id}).fetch({withRelated: ["semester.year"]})).toJSON();
-
-    await db.raw(`INSERT INTO title_activities (third_title_id, activity_id, sheet_id, point, options) SELECT third_title_id, activity_id, '${copiedSheet.id}', point, options FROM title_activities WHERE sheet_id = ${sheet.id}`);
-
-    return res.json(copiedSheet);
-}));
-
-module.exports = route;

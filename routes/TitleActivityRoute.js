@@ -15,7 +15,7 @@ const rules = [
         .notEmpty().withMessage("Không được để trống"),
     check("activity_id")
         .notEmpty().withMessage("Không được để trống"),
-    check("sheet_id")
+    check("semester_id")
         .notEmpty().withMessage("Không được để trống"),
     check("point")
         .notEmpty().withMessage("Không được để trống"),
@@ -23,13 +23,13 @@ const rules = [
 
 route.get("/", asyncRoute(async (req, res) => {
     let primaryTitles = await new PrimaryTitleModel()
-        .orderBy("order", "ASC")
+        .orderBy("order")
         .fetchAll({
         withRelated: [
             'secondary_titles.third_titles.title_activities.activity',
-            {'secondary_titles': (qb) => qb.orderBy("order", "ASC")},
-            {'secondary_titles.third_titles': (qb) => qb.orderBy("order", "ASC")},
-            {'secondary_titles.third_titles.title_activities': (qb) => qb.where('sheet_id', req.query.sheet)},
+            {'secondary_titles': (qb) => qb.orderBy("order")},
+            {'secondary_titles.third_titles': (qb) => qb.orderBy("order")},
+            {'secondary_titles.third_titles.title_activities': (qb) => qb.where('semester_id', req.query.semester)},
         ],
     });
     return res.json({data: {
@@ -50,7 +50,7 @@ route.post("/", asyncRoute(async (req, res) => {
         else result = await new TitleActivityModel({
             third_title_id: titleActivity.third_title_id,
             activity_id: titleActivity.activity_id,
-            sheet_id: titleActivity.sheet_id,
+            semester_id: titleActivity.semester_id,
             point: titleActivity.point,
             options: titleActivity.options,
         }).save();

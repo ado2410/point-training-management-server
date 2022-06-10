@@ -5,9 +5,9 @@
 exports.up = function(knex) {
     return knex.schema.createTable("activities", (table) => {
         table.bigIncrements().primary();
-        table.bigInteger("semester_id").references("id").inTable("semesters");
+        table.bigInteger("semester_id").references("id").inTable("semesters").notNullable().onDelete("CASCADE");
         table.bigInteger("activity_type_id").references("id").inTable("activity_types").notNullable();
-        table.text("code").notNullable().unique();
+        table.text("code").notNullable();
         table.text("name").notNullable();
         table.date("time_start");
         table.date("time_end");

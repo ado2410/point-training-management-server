@@ -23,7 +23,7 @@ const rules = (isImport = false) => ([
         .not().isDate().withMessage("Không phải định dạng ngày tháng"),
     body(`${isImport ? '*.' : ''}class_id`)
         .notEmpty().withMessage("Không được để trống")
-        .custom((value, {req}) => exists(ClassModel, value, "id")).withMessage("Không tồn tại trong CSDL"),
+        .custom((value, {req}) => exists(ClassModel, "id", value)).withMessage("Không tồn tại trong CSDL"),
     body(`${isImport ? '*.' : ''}username`)
         .notEmpty().withMessage("Không được để trống")
         .isAlphanumeric().withMessage("Chỉ được phép kí tự chữ cái (A-Z), (a-z) và (0-9)")
@@ -31,7 +31,7 @@ const rules = (isImport = false) => ([
         .not().custom(async (value, {req}) => {
             let student = null;
             if (req.params.id) student = (await new Model({id: req.params.id}).fetch()).toJSON();
-            return exists(UserModel, value, "username", student ? [student.user_id] : []);
+            return exists(UserModel, "username", value, student ? [student.user_id] : []);
     }).withMessage("Đã tồn tại trong CSDL"),
     body(`${isImport ? '*.' : ''}email`)
         .notEmpty().withMessage("Không được để trống")
@@ -39,7 +39,7 @@ const rules = (isImport = false) => ([
         .not().custom(async (value, {req}) => {
             let student = null;
             if (req.params.id) student = (await new Model({id: req.params.id}).fetch()).toJSON();
-            return exists(UserModel, value, "email", student ? [student.user_id] : []);
+            return exists(UserModel, "email", value, student ? [student.user_id] : []);
     }).withMessage("Đã tồn tại trong CSDL"),
 ]);
 

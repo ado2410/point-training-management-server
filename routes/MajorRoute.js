@@ -15,7 +15,10 @@ module.exports = TemplateRoute(
             withRelated: ["department"],
         },
         list: {
-            fetch: (req, res) => new Model().where("department_id", req.query.department).orderBy("created_at", "DESC").fetchAll(),
+            query: (qb, req) => {
+                if (req.query.department) qb = model.where("department_id", req.query.department)
+                return qb;
+            },
         },
         create: {
             options: {

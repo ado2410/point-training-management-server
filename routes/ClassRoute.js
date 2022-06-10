@@ -16,9 +16,8 @@ module.exports = TemplateRoute(
         },
         list: {
             query: (qb, req) => {
-                if (req.query.major)
-                    qb  = qb.where("major_id", req.query.major);
-                    return qb;
+                if (req.query.major) qb = qb.where("major_id", req.query.major);
+                return qb;
             },
         },
         create: {

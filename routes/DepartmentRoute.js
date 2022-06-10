@@ -10,6 +10,9 @@ const rules = [
 module.exports = TemplateRoute(
     Model,
     {
+        list: {
+            search: ["name"],
+        },
         insert: {
             rules: rules,
             fields: ["name"]
