@@ -7,6 +7,7 @@ exports.up = function (knex) {
         table.bigIncrements().primary();
         table.bigInteger("year_id").references("id").inTable("years").notNullable();
         table.text("name").notNullable();
+        table.jsonb("settings").defaultTo({}).notNullable();
         table.timestamps(true, true);
     });
 };

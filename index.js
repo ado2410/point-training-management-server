@@ -14,7 +14,7 @@ const ActivityRoute = require('./routes/ActivityRoute');
 const SheetRoute = require('./routes/SheetRoute');
 const TitleActivityRoute = require('./routes/TitleActivityRoute');
 const AttendanceRoute = require('./routes/AttendanceRoute');
-const PointRoute = require('./routes/PointRoute');
+const SemesterStudentRoute = require('./routes/SemesterStudentRoute');
 
 const app = express();
 app.use(express.json({limit: "1mb"}));
@@ -31,7 +31,7 @@ app.use("/activities", ActivityRoute);
 app.use("/sheets", SheetRoute);
 app.use("/title_activities", TitleActivityRoute);
 app.use("/attendance", AttendanceRoute);
-app.use("/point", PointRoute);
+app.use("/semester_students", SemesterStudentRoute);
 
 app.listen(3100, () => console.log("Connected to server"));
 

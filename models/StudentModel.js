@@ -9,5 +9,8 @@ module.exports = bookshelf.model("Student", {
     },
     student_activities() {
         return this.hasMany("StudentActivity");
+    },
+    semester_student() {
+        return this.hasOne("SemesterStudent");
     }
 });

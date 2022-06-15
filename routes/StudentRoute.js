@@ -6,6 +6,7 @@ const UserModel = require("../models/UserModel");
 const {exists} = require("../utils/validator");
 const {bookshelf} = require("../utils/db");
 const Promise = require("bluebird");
+const { db } = require("../utils/db");
 
 const rules = (isImport = false) => ([
     body(`${isImport ? '*.' : ''}student_code`)
@@ -50,7 +51,9 @@ module.exports = TemplateRoute(
             withRelated: ["user", "class"],
         },
         list: {
+            search: ["student_code", "first_name", "last_name", "username", "email", db.raw("CONCAT(first_name, ' ', last_name)")],
             query: (qb, req) => {
+                qb = qb.query(innerQb => innerQb.join("users", "users.id", "students.user_id"));
                 if (req.query.class)
                     qb = qb.where("class_id", req.query.class);
                 return qb;
