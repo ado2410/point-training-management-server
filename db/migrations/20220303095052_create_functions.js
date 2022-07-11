@@ -2,7 +2,7 @@
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.up = function(knex) {
+exports.up = function (knex) {
     return knex.raw(`
     CREATE OR REPLACE FUNCTION calculate_point(semester_id BIGINT, student_id BIGINT, third_title_id BIGINT) RETURNS DOUBLE PRECISION AS $$
         DECLARE
@@ -69,6 +69,83 @@ exports.up = function(knex) {
             RETURN point;
         END;
     $$ LANGUAGE plpgsql;
+
+    CREATE OR REPLACE FUNCTION get_group_full_code(group_id bigint)
+    RETURNS text AS $$
+    DECLARE
+        code text = '';
+        parent_group_id bigint;
+    BEGIN
+        SELECT groups.group_id, groups.code
+        INTO parent_group_id, code
+        FROM groups
+        WHERE groups.id = $1;
+        IF parent_group_id IS NULL THEN RETURN code;
+        ELSE RETURN CONCAT(get_group_full_code(parent_group_id), '_', code);
+        END IF;
+    END;
+    $$
+    LANGUAGE plpgsql;
+
+    CREATE OR REPLACE FUNCTION get_activity_code(semester_id bigint, activity_id bigint)
+    RETURNS text AS $$
+    DECLARE
+        _group_id bigint;
+        full_code text;
+        index bigint;
+    BEGIN
+        -- Tìm group id
+        SELECT activities.group_id
+        INTO _group_id
+        FROM activities
+        WHERE activities.id = $2;
+        
+        -- Lấy group full code
+        full_code = get_group_full_code(_group_id);
+        
+        -- Tìm chỉ mục
+        SELECT row_number, id
+        INTO index
+        FROM (
+            SELECT ROW_NUMBER() OVER (ORDER BY id) AS row_number, id
+            FROM activities
+            WHERE activities.group_id = _group_id AND activities.semester_id = $1
+        ) AS ac
+        WHERE id = $2;
+        
+        RETURN CONCAT(full_code, '_', index);
+    END;
+    $$
+    LANGUAGE plpgsql;
+
+    CREATE OR REPLACE FUNCTION get_id_from_group_full_code(full_code text)
+    RETURNS bigint AS $$
+    DECLARE
+        group_id bigint;
+    BEGIN
+        SELECT groups.id
+        INTO group_id
+        FROM groups
+        WHERE get_group_full_code(groups.id) = $1;
+        RETURN group_id;
+    END;
+    $$
+    LANGUAGE plpgsql;
+
+    CREATE OR REPLACE FUNCTION get_id_from_activity_code(semester_id bigint, activity_code text)
+    RETURNS bigint AS $$
+    DECLARE
+        activity_id bigint;
+    BEGIN
+        SELECT activities.id
+        INTO activity_id
+        FROM activities
+        WHERE get_activity_code($1, activities.id) = $2
+        ORDER BY id;
+        RETURN activity_id;
+    END;
+    $$
+    LANGUAGE plpgsql;
     `);
 };
 
@@ -76,6 +153,10 @@ exports.up = function(knex) {
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.down = function(knex) {
-    return knex.raw("DROP FUNCTION calculate_point");
+exports.down = function (knex) {
+    return knex.raw(`
+    DROP FUNCTION calculate_point;
+    DROP FUNCTION get_group_full_code;
+    DROP FUNCTION get_activity_code;
+    `);
 };

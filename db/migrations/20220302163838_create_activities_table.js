@@ -7,7 +7,7 @@ exports.up = function(knex) {
         table.bigIncrements().primary();
         table.bigInteger("semester_id").references("id").inTable("semesters").notNullable().onDelete("CASCADE");
         table.bigInteger("activity_type_id").references("id").inTable("activity_types").notNullable();
-        table.text("code").notNullable();
+        table.bigInteger("group_id").references("id").inTable("groups").notNullable();
         table.text("name").notNullable();
         table.date("time_start");
         table.date("time_end");
@@ -17,6 +17,7 @@ exports.up = function(knex) {
         table.enum("type", ["CHECK", "COUNT", "ENUM", "POINT"]).defaultTo("CHECK").notNullable();
         table.specificType("accepts", "text[]");
         table.bigInteger("default_value").defaultTo(0).notNullable();
+        table.jsonb("attendance").defaultTo({open: false, start: null, end: null, level: "ALL", departments: [], classes: [], positions: []}).notNullable();
         table.timestamps(true, true);
     });
 };
