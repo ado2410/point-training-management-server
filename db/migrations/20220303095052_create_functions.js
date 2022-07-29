@@ -110,6 +110,7 @@ exports.up = function (knex) {
             SELECT ROW_NUMBER() OVER (ORDER BY id) AS row_number, id
             FROM activities
             WHERE activities.group_id = _group_id AND activities.semester_id = $1
+            ORDER BY id
         ) AS ac
         WHERE id = $2;
         
@@ -146,6 +147,98 @@ exports.up = function (knex) {
     END;
     $$
     LANGUAGE plpgsql;
+
+    CREATE OR REPLACE FUNCTION get_can_modify_attendance(semester_id bigint, student_id bigint, attendance jsonb)
+    RETURNS boolean AS $$
+    DECLARE
+        format text = 'YYYY/MM/DD HH24:MI:SS';
+        _open text = $3->>'open';
+        _start text = $3->>'start';
+        _end text = $3->>'end';
+        _level text = $3->>'level';
+        departments int[] = REPLACE(REPLACE($3->>'departments', '[', '{'), ']', '}')::int[];
+        department int;
+        classes int[] = REPLACE(REPLACE($3->>'classes', '[', '{'), ']', '}')::int[];
+        _class int;
+        positions text[] = REPLACE(REPLACE($3->>'positions', '[', '{'), ']', '}')::text[];
+        _position text;
+    BEGIN
+        -- Nếu open === false
+        IF _open != 'true' THEN RETURN false; END IF;
+        
+        -- Kiểm tra ngày
+        IF _start IS NOT null OR _end IS NOT null THEN
+            -- Nếu không có ngày bắt đầu
+            IF _start IS null AND NOW() > TO_TIMESTAMP(_end, format) THEN RETURN false;
+            -- Nếu không có ngày kết thúc
+            ELSIF _end IS null AND NOW() < TO_TIMESTAMP(_start, format) THEN RETURN false;
+            -- Nếu ngày không hợp lệ
+            ELSIF NOW() < TO_TIMESTAMP(_start, format) OR NOW() > TO_TIMESTAMP(_end, format) THEN RETURN false;
+            END IF;
+        END IF;
+        
+        --Kiểm tra cấp
+        IF _level = 'DEPARTMENT' THEN
+            --Kiểm tra có trong khoa
+            SELECT departments.id
+            INTO department
+            FROM students
+                JOIN classes ON students.class_id = classes.id
+                JOIN majors ON classes.major_id = majors.id
+                JOIN departments ON majors.department_id = departments.id
+            WHERE students.id = $2;
+
+            IF department != ALL(departments) THEN RETURN false; END IF;
+        ELSIF _level = 'CLASS' THEN
+            --Kiểm tra có trong lớp
+            SELECT classes.id
+            INTO _class
+            FROM students
+                JOIN classes ON students.class_id = classes.id
+            WHERE students.id = $2;
+
+            IF _class != ALL(classes) THEN RETURN false; END IF;
+        END IF;
+        
+        
+        --Kiểm tra chức vụ lớp
+        SELECT semester_students.position
+        INTO _position
+        FROM semester_students
+        WHERE semester_students.semester_id = $1 AND semester_students.student_id = $2;
+        
+        IF _position != ALL(positions) THEN RETURN false; END IF;
+        
+        RETURN true;
+    END;
+    $$
+    LANGUAGE plpgsql;
+
+    CREATE OR REPLACE FUNCTION is_in_group(user_id bigint, group_id bigint)
+    RETURNS boolean AS $$
+    DECLARE
+        _row record;
+        in_group boolean = false;
+        parent_id bigint;
+    BEGIN
+        SELECT COUNT(*) > 0
+        INTO in_group
+        FROM group_users
+        WHERE group_users.group_id = $2 AND group_users.user_id = $1;
+        
+        SELECT groups.group_id
+        INTO parent_id
+        FROM groups
+        WHERE groups.id = $2;
+        
+        IF parent_id IS NOT NULL AND in_group = false THEN
+            in_group = is_in_group($1, parent_id);
+        END IF;
+        
+        RETURN in_group;
+    END;
+    $$
+    LANGUAGE plpgsql;   
     `);
 };
 

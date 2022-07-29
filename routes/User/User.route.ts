@@ -1,46 +1,32 @@
-import { check } from "express-validator";
+import adminMiddleware from "../../middleware/adminMiddleware";
+import loginMiddleware from "../../middleware/loginMiddleware";
 import UserModel from "../../models/UserModel";
 import TemplateRoute from "../template/template.route";
-
-const rules = [
-    check("user_type_id").notEmpty().withMessage("Không được để trống"),
-    check("first_name").notEmpty().withMessage("Không được để trống"),
-    check("last_name").notEmpty().withMessage("Không được để trống"),
-    check("email")
-        .notEmpty().withMessage("Không được để trống")
-        .isEmail().withMessage("Không phải là email"),
-    check("username")
-        .notEmpty().withMessage("Không được để trống")
-        .isAlphanumeric().withMessage("Chỉ được phép kí tự chữ cái (A-Z), (a-z) và (0-9)")
-        .isLength({ min: 3, max: 20 }).withMessage("Độ dài ít nhất là 3 và tối đa là 20"),
-];
-
-const createRules = [
-    ...rules,
-    check("password").notEmpty().withMessage("Không được để trống"),
-];
+import { fetchOptions, insertFields, insertRules, listQuery, listSearch, updateFields, updateRules } from "./User.constants";
+import { viewMiddleware } from "./User.middleware";
 
 export default TemplateRoute(UserModel, {
-    fetchOptions: {
-        withRelated: ["user_type"],
-    },
+    middleware: [loginMiddleware],
+    fetchOptions: fetchOptions,
     list: {
-        query: (qb) => qb.whereIn("user_type_id", [1, 2]),
-        search: ["username", "first_name", "last_name"],
+        middleware: [adminMiddleware],
+        search: listSearch,
+        query: listQuery,
+    },
+    view: {
+        middleware: [viewMiddleware],
     },
     insert: {
-        rules: createRules,
-        fields: [
-            "user_type_id",
-            "username",
-            "password",
-            "first_name",
-            "last_name",
-            "email",
-        ],
+        middleware: [adminMiddleware],
+        rules: insertRules,
+        fields: insertFields,
     },
     update: {
-        rules: rules,
-        fields: ["first_name", "last_name", "email"],
+        middleware: [adminMiddleware],
+        rules: updateRules,
+        fields: updateFields,
     },
+    delete: {
+        middleware: [adminMiddleware],
+    }
 });

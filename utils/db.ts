@@ -5,7 +5,8 @@ export const db = Knex({
     client: 'pg',
     connection: {
         connectionString: process.env.DB_URL,
-        ssl: false,//{ rejectUnauthorized: false }
+        ssl: false,
+        timezone: "UTC",
     },
     searchPath: ['knex', 'public'],
 });

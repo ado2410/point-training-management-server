@@ -1,5 +1,6 @@
 import express from "express";
-import { createAction, deleteAction, generateRoute, importAction, insertAction, listAction, updateAction, viewAction } from "./template.actions";
+import { generateRoute } from "./template.actions";
+import { createAction, deleteAction, importAction, insertAction, listAction, updateAction, viewAction } from "./template.constants";
 import { TemplateRouteOptions } from "./template.types";
 
 export default (
@@ -28,8 +29,19 @@ export default (
     const updateRules = options.update?.rules?.concat(baseRules) || baseRules;
     const deleteRules = options.delete?.rules?.concat(baseRules) || baseRules;
 
+    //Tạo các extra route
+    options.extra?.forEach((extra) =>
+        generateRoute(route, {
+            method: extra.method,
+            path: extra.path,
+            middleware: [...baseMiddleware, ...extra.middleware || []],
+            rules: [...baseRules, ...extra.rules || []],
+            action: extra.action,
+        })
+    );
+
     //Tạo route list
-    if (options.list?.excluded !== true)
+    if (options.list?.excluded !== true && model)
         generateRoute(route, {
             method: "GET",
             path: "/",
@@ -39,7 +51,7 @@ export default (
         });
 
     //Tạo route create
-    if (options.create?.excluded !== true)
+    if (options.create?.excluded !== true && model)
         generateRoute(route, {
             method: "GET",
             path: "/create",
@@ -49,7 +61,7 @@ export default (
         });
 
     //Tạo route view
-    if (options.view?.excluded !== true)
+    if (options.view?.excluded !== true && model)
         generateRoute(route, {
             method: "GET",
             path: "/:id",
@@ -59,7 +71,7 @@ export default (
         });
 
     //Tạo route import
-    if (options.import?.excluded !== true)
+    if (options.import?.excluded !== true && model)
         generateRoute(route, {
             method: "POST",
             path: "/import",
@@ -69,7 +81,7 @@ export default (
         });
 
     //Tạo route insert
-    if (options.insert?.excluded !== true)
+    if (options.insert?.excluded !== true && model)
         generateRoute(route, {
             method: "POST",
             path: "/",
@@ -79,7 +91,7 @@ export default (
         });
 
     //Tạo route update
-    if (options.update?.excluded !== true)
+    if (options.update?.excluded !== true && model)
         generateRoute(route, {
             method: "PUT",
             path: "/:id",
@@ -89,7 +101,7 @@ export default (
         });
 
     //Tạo route delete
-    if (options.delete?.excluded !== true)
+    if (options.delete?.excluded !== true && model)
         generateRoute(route, {
             method: "DELETE",
             path: "/:id",
@@ -97,17 +109,6 @@ export default (
             rules: deleteRules,
             action: (req, res) => deleteAction(req, res, model, options),
         });
-
-    //Tạo các extra route
-    options.extra?.forEach((extra) =>
-        generateRoute(route, {
-            method: extra.method,
-            path: extra.path,
-            middleware: extra.middleware,
-            rules: extra.rules,
-            action: extra.action,
-        })
-    );
 
     return route;
 }

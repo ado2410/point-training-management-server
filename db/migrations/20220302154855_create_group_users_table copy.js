@@ -6,7 +6,7 @@ exports.up = function(knex) {
     return knex.schema.createTable("group_users", (table) => {
         table.bigIncrements().primary();
         table.bigInteger("user_id").notNullable().references("id").inTable("users");
-        table.bigInteger("group_id").notNullable().references("id").inTable("groups");
+        table.bigInteger("group_id").notNullable().references("id").inTable("groups").onDelete("CASCADE");
         table.timestamps(true, true);
     });
 };

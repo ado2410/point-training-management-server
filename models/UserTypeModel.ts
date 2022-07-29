@@ -4,7 +4,7 @@ import User from "./UserModel";
 
 export default class UserType extends bookshelf!.Model<UserType> {
     get tableName() {
-        return "users";
+        return "user_types";
     }
     users(): Bookshelf.Collection<User> {
         return this.hasMany(User);

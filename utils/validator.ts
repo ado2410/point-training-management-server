@@ -5,12 +5,12 @@ export const exists = async (
     column: string,
     value: any,
     ignoreIds: number[] = [],
-    qb: ((queryBuilder: Knex.QueryBuilder<any, any>) => Knex.QueryBuilder<any, any>) | undefined = undefined
+    qb: ((queryBuilder: Knex.QueryBuilder<any, any>) => (Knex.QueryBuilder<any, any> | Promise<Knex.QueryBuilder<any, any>>)) | undefined = undefined
 ) => {
     let count = await new model()
         .where(column, value)
         .where("id", "not in", ignoreIds);
-    if (qb) count = qb(count);
+    if (qb !== undefined) count = await qb(count);
     count = await count.count();
     if (count === 0) return Promise.reject();
     else return Promise.resolve();

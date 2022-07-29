@@ -5,7 +5,7 @@
 exports.up = function (knex) {
     return knex.schema.createTable("years", (table) => {
         table.increments().primary();
-        table.text("name").notNullable();
+        table.text("name").notNullable().unique();
         table.timestamps(true, true);
     });
 };

@@ -6,7 +6,7 @@ exports.up = function (knex) {
     return knex.schema.createTable("classes", (table) => {
         table.increments().primary();
         table.bigInteger("major_id").references("id").inTable("majors").notNullable();
-        table.text("name").notNullable();
+        table.text("name").notNullable().unique();
         table.timestamps(true, true);
     });
 };

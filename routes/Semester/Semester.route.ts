@@ -1,53 +1,64 @@
 import SemesterModel from "../../models/SemesterModel";
 import templateRoute from "../template/template.route";
-import { createOptions, listQuery, rules } from "./Semester.constants";
+import { copyAction, createOptions, fetchOptions, getDashboardAction, insertAndUpdateRules, listQuery, listSearch, loadDataAction, saveDataAction, saveGeneralSettingAction, viewAction } from "./Semester.constants";
 import loginMiddleware from "../../middleware/loginMiddleware";
 import adminMiddleware from "../../middleware/adminMiddleware";
-import { copyAction, loadDataAction, saveDataAction, saveGeneralSettingAction, viewAction } from "./Semester.actions";
+import { semesterMiddleware } from "./Semester.middleware";
 
 const route = templateRoute(SemesterModel, {
     middleware: [loginMiddleware],
-    fetchOptions: {
-        withRelated: ["year"],
-    },
+    fetchOptions: fetchOptions,
     list: {
+        search: listSearch,
         query: listQuery,
     },
     view: {
+        middleware: [semesterMiddleware],
         custom: viewAction,
     },
     create: {
         options: createOptions,
     },
     insert: {
-        rules: rules,
+        middleware: [adminMiddleware],
+        rules: insertAndUpdateRules,
         fields: ["name", "year_id"],
     },
     update: {
-        rules: rules,
+        middleware: [adminMiddleware],
+        rules: insertAndUpdateRules,
         fields: ["name"],
+    },
+    delete: {
+        middleware: [adminMiddleware],
     },
     extra: [
         {
-            middleware: [loginMiddleware, adminMiddleware],
+            middleware: [semesterMiddleware],
+            path: "/:id/dashboard",
+            method: "GET",
+            action: getDashboardAction,
+        },
+        {
+            middleware: [adminMiddleware],
             path: "/:id/save_general_setting",
             method: "POST",
             action: saveGeneralSettingAction,
         },
         {
-            middleware: [loginMiddleware, adminMiddleware],
+            middleware: [adminMiddleware],
             path: "/:id/copy",
             method: "POST",
             action: copyAction,
         },
         {
-            middleware: [loginMiddleware, adminMiddleware],
+            middleware: [adminMiddleware],
             path: "/:id/save",
             method: "GET",
             action: saveDataAction,
         },
         {
-            middleware: [loginMiddleware, adminMiddleware],
+            middleware: [adminMiddleware],
             path: "/:id/load",
             method: "POST",
             action: loadDataAction,
