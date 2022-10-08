@@ -4,7 +4,9 @@ module.exports = {
     client: "pg",
     connection: {
         connectionString: process.env.DB_URL,
-        ssl: false,
+        ssl: {
+            rejectUnauthorized: false
+          }
     },
     searchPath: ["knex", "public"],
     migrations: {
