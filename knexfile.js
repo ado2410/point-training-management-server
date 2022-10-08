@@ -5,6 +5,7 @@ module.exports = {
     connection: {
         connectionString: process.env.DB_URL,
         ssl: {
+            require: true,
             rejectUnauthorized: false
           }
     },
