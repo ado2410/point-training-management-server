@@ -4,7 +4,7 @@ import SemesterModel from "../../models/SemesterModel";
 import YearModel from "../../models/YearModel";
 import ClassModel from "../../models/ClassModel";
 import { db } from "../../utils/db";
-import { Knex } from "knex";
+import Knex = require("knex")
 import StudentModel from "../../models/StudentModel";
 import ActivityModel from "../../models/ActivityModel";
 import StudentActivityModel from "../../models/StudentActivityModel";
