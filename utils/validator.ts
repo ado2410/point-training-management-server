@@ -1,5 +1,8 @@
 import { Knex } from "knex";
 
+/**
+ * Kiểm tra tồn tại
+ */
 export const exists = async (
     model: any,
     column: string,
@@ -16,6 +19,9 @@ export const exists = async (
     else return Promise.resolve();
 };
 
+/**
+ * Kiểm tra bị duplicate
+ */
 export const duplicate = (
     field: string,
     value: any,

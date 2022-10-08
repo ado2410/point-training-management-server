@@ -4,6 +4,8 @@
  */
 exports.up = function (knex) {
     return knex.raw(`
+    -- Trả về kết quả là điểm sinh viên ở một học kỳ
+    -- calculate_point(id học kỳ, id sinh viên, id tiêu đề cấp 3)
     CREATE OR REPLACE FUNCTION calculate_point(semester_id BIGINT, student_id BIGINT, third_title_id BIGINT) RETURNS DOUBLE PRECISION AS $$
         DECLARE
             default_point DOUBLE PRECISION;
@@ -70,6 +72,8 @@ exports.up = function (knex) {
         END;
     $$ LANGUAGE plpgsql;
 
+    -- Trả về mã nhóm đầy đủ
+    -- get_group_full_code(mã nhóm)
     CREATE OR REPLACE FUNCTION get_group_full_code(group_id bigint)
     RETURNS text AS $$
     DECLARE
@@ -87,6 +91,8 @@ exports.up = function (knex) {
     $$
     LANGUAGE plpgsql;
 
+    -- trả về mã hoạt động
+    -- get_activity_code(mã học kỳ, mã hoạt động)
     CREATE OR REPLACE FUNCTION get_activity_code(semester_id bigint, activity_id bigint)
     RETURNS text AS $$
     DECLARE
@@ -119,6 +125,8 @@ exports.up = function (knex) {
     $$
     LANGUAGE plpgsql;
 
+    -- Trả về id nhóm từ mã nhóm đầy đủ
+    -- get_id_from_group_full_code(mã nhóm đầy đủ)
     CREATE OR REPLACE FUNCTION get_id_from_group_full_code(full_code text)
     RETURNS bigint AS $$
     DECLARE
@@ -133,6 +141,8 @@ exports.up = function (knex) {
     $$
     LANGUAGE plpgsql;
 
+    -- Trả về id hoạt động từ mã hoạt động đầy đủ
+    -- get_id_from_activity_code(id học kỳ, id hoạt động)
     CREATE OR REPLACE FUNCTION get_id_from_activity_code(semester_id bigint, activity_code text)
     RETURNS bigint AS $$
     DECLARE
@@ -148,6 +158,8 @@ exports.up = function (knex) {
     $$
     LANGUAGE plpgsql;
 
+    -- Trả về kết quả true hoặc false nếu sinh viên có quyền đánh giá hoạt động
+    -- get_can_modify_attendance(id học kỳ, id sinh viên, cột attendance trong table activities)
     CREATE OR REPLACE FUNCTION get_can_modify_attendance(semester_id bigint, student_id bigint, attendance jsonb)
     RETURNS boolean AS $$
     DECLARE
@@ -214,6 +226,8 @@ exports.up = function (knex) {
     $$
     LANGUAGE plpgsql;
 
+    -- Kiểm tra tài khoản (người nhập liệu) có ở trong nhóm hay không
+    -- is_in_group(id tài khoản, id nhóm)
     CREATE OR REPLACE FUNCTION is_in_group(user_id bigint, group_id bigint)
     RETURNS boolean AS $$
     DECLARE
@@ -248,8 +262,12 @@ exports.up = function (knex) {
  */
 exports.down = function (knex) {
     return knex.raw(`
-    DROP FUNCTION calculate_point;
-    DROP FUNCTION get_group_full_code;
+    DROP FUNCTION is_in_group;
+    DROP FUNCTION get_can_modify_attendance;
+    DROP FUNCTION get_id_from_activity_code;
+    DROP FUNCTION get_id_from_group_full_code;
     DROP FUNCTION get_activity_code;
+    DROP FUNCTION get_group_full_code;
+    DROP FUNCTION calculate_point;
     `);
 };

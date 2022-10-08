@@ -2,6 +2,9 @@ import { NextFunction, Request, Response } from "express";
 import { throwError } from "../../utils/error";
 import { canModifyAttendance } from "./Attendance.actions";
 
+/**
+ * Middleware kiểm tra người dùng có quyền đánh giá
+ */
 export const canModifyAttendanceMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const activityId = req.body.activity_id;
     const studentId = req.body.student_id;

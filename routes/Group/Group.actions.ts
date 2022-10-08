@@ -10,6 +10,9 @@ const isInGroup = (auth: any) => {
     else return db.raw(`is_in_group(${auth.id}, id) != true AS disabled`);
 }
 
+/**
+ * Trả về nested group
+ */
 const getNestedChildren = (auth: any, nestedLimit: number) => {
     const children: Record<string, (queryBuilder: Knex.QueryBuilder<any, any>) => Knex.QueryBuilder<any, any>>[] = [];
     let related = 'children';

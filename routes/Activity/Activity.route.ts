@@ -3,13 +3,13 @@ import loginMiddleware from "../../middleware/loginMiddleware";
 import ActivityModel from "../../models/ActivityModel";
 import templateRoute from "../template/template.route";
 import { createOptions, fetchOptions, getSemesterActivityAction, importFields, importRules, insertFields, insertRules, listQuery, listSearch, updateFields, updateRules } from "./Activity.constants";
-import { canInsertActivityMiddleware, canModifyActivityMiddleware, semesterMiddleware } from "./Activity.middleware";
+import { canInsertActivityMiddleware, canModifyActivityMiddleware, accessSemesterMiddleware } from "./Activity.middleware";
 
 export default templateRoute(ActivityModel, {
     middleware: [loginMiddleware],
     fetchOptions: fetchOptions,
     list: {
-        middleware: [semesterMiddleware],
+        middleware: [accessSemesterMiddleware],
         search: listSearch,
         query: listQuery,
     },
@@ -39,7 +39,7 @@ export default templateRoute(ActivityModel, {
         {
             path: "/user",
             method: "GET",
-            middleware: [semesterMiddleware],
+            middleware: [accessSemesterMiddleware],
             action: getSemesterActivityAction,
         }
     ],

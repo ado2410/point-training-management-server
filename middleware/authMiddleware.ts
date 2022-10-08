@@ -2,6 +2,9 @@ import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { throwError } from "../utils/error";
 
+/**
+    Middleware dùng để kiểm tra access token của người dùng gửi lên có hợp lệ hay không
+*/
 export default (req: Request, res: Response, next: NextFunction) => {
     const authorization = req.headers.authorization;
     let accessToken = authorization;

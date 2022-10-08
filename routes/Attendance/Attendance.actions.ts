@@ -5,10 +5,10 @@ import { canModifyActivity } from "../Activity/Activity.actions";
 import { isAdmin, isImporter, UserType } from "../User/User.constants";
 
 /**
-* Kiểm tra quyền điểm danh:
+* Kiểm tra quyền đánh giá:
 * - Nếu là admin thì hoàn toàn được phép.
-* - Nếu là importer chỉ được phép điểm danh activity của họ.
-* - Nếu là sinh viên thì chỉ được phép điểm danh (cho lớp hoặc khoa) khi mở chỉnh sửa.
+* - Nếu là importer chỉ được phép đánh giá hoạt động của họ.
+* - Nếu là sinh viên thì chỉ được phép đánh giá (cho lớp hoặc khoa) khi mở chỉnh sửa.
 */
 export const canModifyAttendance = async (activityId: string, studentId: string, auth: any) => {
     if (isAdmin(auth)) return true;

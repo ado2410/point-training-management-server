@@ -2,8 +2,11 @@ import { Request, Response } from "express";
 import { body } from "express-validator";
 import StudentActivityModel from "../../models/StudentActivityModel";
 import StudentModel from "../../models/StudentModel";
-import { isStudent, UserType } from "../User/User.constants";
+import { isStudent } from "../User/User.constants";
 
+/**
+ * Trả về danh sách sinh viên trong đánh giá hoạt động
+ */
 export const getAttendanceAction = async (req: Request, res: Response) => {
     const auth = req.headers.auth as any;
     const classId = req.query.class as string;
@@ -26,6 +29,9 @@ export const saveAttendanceRules = [
     body("value").notEmpty().withMessage("Không được để trống")
 ];
 
+/**
+ * Cập nhật đánh giá
+ */
 export const saveAttendanceAction = async (req: Request, res: Response) => {    
     const studentId = req.body.student_id as string;
     const activityId = req.body.activity_id as string;

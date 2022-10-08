@@ -3,6 +3,72 @@ import { generateRoute } from "./template.actions";
 import { createAction, deleteAction, importAction, insertAction, listAction, updateAction, viewAction } from "./template.constants";
 import { TemplateRouteOptions } from "./template.types";
 
+/**
+ * Cấu trúc:
+ * - middleware: Middleware chung của route, có ảnh hưởng đến tất cả các actions trong route
+ * ----------------------------------------------------------------
+ * - fetchOptions: Cài đặt kết quả trả về
+ * ----------------------------------------------------------------
+ * - list: Route trả về danh sách (vd: GET /users)
+ * + excluded: Loại trừ route này
+ * + middleware: Middleware của route này
+ * + rules: Kiểm tra dữ liệu đầu vào bằng express-validator
+ * + search: Các fields dùng để search
+ * + query: các lệnh sql bổ sung query cho list
+ * + custom: xây dựng sql thay thế
+ * ----------------------------------------------------------------
+ * - view: Route trả về một record (vd: GET /users/1)
+ * + excluded: Loại trừ route này
+ * + middleware: Middleware của route này
+ * + rules: Kiểm tra dữ liệu đầu vào bằng express-validator
+ * + custom: xây dựng sql thay thế
+ * ----------------------------------------------------------------
+ * - create: Các options cho fields (vd: GET /users/create)
+ * + excluded: Loại trừ route này
+ * + middleware: Middleware của route này
+ * + rules: Kiểm tra dữ liệu đầu vào bằng express-validator
+ * + options: List các options
+ * ----------------------------------------------------------------
+ * - import: Nhập dữ liệu từ danh sách (vd: POST /users/import)
+ * + excluded: Loại trừ route này
+ * + middleware: Middleware của route này
+ * + rules: Kiểm tra dữ liệu đầu vào bằng express-validator
+ * + custom: xây dựng sql thay thế
+ * + fields: Lựa chọn các cột cần lấy
+ * ----------------------------------------------------------------
+ * - insert: Chèn record mới (vd: POST /users)
+ * + excluded: Loại trừ route này
+ * + middleware: Middleware của route này
+ * + rules: Kiểm tra dữ liệu đầu vào bằng express-validator
+ * + pre: Tiền xử lý trước khi thực hiện
+ * + post: Hậu xử lý sau khi thục hiện
+ * + custom: xây dựng sql thay thế
+ * + fields: Lựa chọn các cột cần lấy
+ * ----------------------------------------------------------------
+ * - update: Cập nhật record (vd: PUT /users/1)
+ * + excluded: Loại trừ route này
+ * + middleware: Middleware của route này
+ * + rules: Kiểm tra dữ liệu đầu vào bằng express-validator
+ * + pre: Tiền xử lý trước khi thực hiện
+ * + post: Hậu xử lý sau khi thục hiện
+ * + custom: xây dựng sql thay thế
+ * + fields: Lựa chọn các cột cần lấy
+ * ----------------------------------------------------------------
+ * - delete: Xoá record (vd: DELETE /users/1)
+ * + excluded: Loại trừ route này
+ * + middleware: Middleware của route này
+ * + rules: Kiểm tra dữ liệu đầu vào bằng express-validator
+ * + pre: Tiền xử lý trước khi thực hiện
+ * + post: Hậu xử lý sau khi thục hiện
+ * + custom: xây dựng sql thay thế
+ * ----------------------------------------------------------------
+ * - extra: Các custom route
+ * + path: Đường dẫn
+ * + rules: Kiểm tra dữ liệu đầu vào bằng express-validator
+ * + method: GET POST PUT PATCH DELETE OPTIONS
+ * + action: Function xử lý
+ * + middleware: Middleware của route này
+ */
 export default (
     model: any,
     options: TemplateRouteOptions,

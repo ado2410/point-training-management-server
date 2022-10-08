@@ -3,6 +3,12 @@ import SemesterModel from "../../models/SemesterModel";
 import { throwError } from "../../utils/error";
 import { isAdmin, isImporter } from "../User/User.constants";
 
+/**
+ * Middleware kiểm tra người dùng có quyền truy cập học kỳ
+ * Nếu là admin: Hoàn toàn có quyền truy cập.
+ * Nếu là người nhập liệu: Hoàn toàn có quyền truy cập
+ * Nếu là sinh viên: Có quyền truy cập khi được mở công khai (public)
+ */
 export const semesterMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const semesterId = req.params.id;
     if (!semesterId) return throwError(res, "SEMESTER", "Id không tìm thấy");

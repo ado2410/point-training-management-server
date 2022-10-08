@@ -4,6 +4,9 @@ import PrimaryTitleModel from "../../models/PrimaryTitleModel";
 import TitleActivityModel from "../../models/TitleActivityModel";
 import { db } from "../../utils/db";
 
+/**
+ * Lấy danh sách các tiêu chí đánh giá
+ */
 export const getTitleActivityAction = async (req: Request, res: Response) => {
     const semesterId = req.query.semester as string;
     let primaryTitles = await new PrimaryTitleModel()
@@ -28,6 +31,9 @@ export const updateTitleActivityRules = [
     body("point").notEmpty().withMessage("Không được để trống"),
 ];
 
+/**
+ * Cập nhật cấu hình đánh giá sinh viên
+ */
 export const updateTitleActivityAction = async (req: Request, res: Response) => {
     if (req.body.delete.length > 0) await new TitleActivityModel().where('id', 'IN', req.body.delete).destroy({require: false});
 

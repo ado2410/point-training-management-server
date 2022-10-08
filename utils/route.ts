@@ -1,5 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 
+/**
+ * Route bất đồng bộ
+ */
 export const asyncRoute =
     (
         func: (
