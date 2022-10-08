@@ -1,5 +1,5 @@
 import { Request } from "express";
-import Knex = require("knex")
+import { Knex } from "knex";
 import GroupModel from "../../models/GroupModel";
 import { db } from "../../utils/db";
 import { isAdmin } from "../User/User.constants";

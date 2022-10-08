@@ -1,5 +1,5 @@
 import { body, CustomValidator } from "express-validator";
-import Knex = require("knex")
+import { Knex } from "knex";
 import UserModel from "../../models/UserModel";
 import UserTypeModel from "../../models/UserTypeModel";
 import { exists } from "../../utils/validator";

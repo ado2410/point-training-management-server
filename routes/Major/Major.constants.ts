@@ -1,6 +1,6 @@
 import { Request } from "express";
 import { body, CustomValidator } from "express-validator";
-import Knex = require("knex")
+import { Knex } from "knex";
 import DepartmentModel from "../../models/DepartmentModel";
 import MajorModel from "../../models/MajorModel";
 import { exists } from "../../utils/validator";

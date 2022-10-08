@@ -1,6 +1,6 @@
 import Bookshelf from "bookshelf";
 import { Request, Response, Router } from "express";
-import Knex = require("knex")
+import { Knex } from "knex";
 import { asyncRoute } from "../../utils/route";
 import { TemplateRoute } from "./template.types";
 

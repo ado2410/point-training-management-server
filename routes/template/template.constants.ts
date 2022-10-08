@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { validationResult } from "express-validator";
-import Knex = require("knex")
+import { Knex } from "knex";
 import { getFetchOptions, searchQueryBuilder } from "./template.actions";
 import { TemplateRouteOptions } from "./template.types";
 

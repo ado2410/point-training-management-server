@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { body, CustomValidator } from "express-validator";
-import Knex = require("knex")
+import { Knex } from "knex";
 import ActivityModel from "../../models/ActivityModel";
 import ActivityTypeModel from "../../models/ActivityTypeModel";
 import ClassModel from "../../models/ClassModel";
